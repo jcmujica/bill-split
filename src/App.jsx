@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { FormProvider, useFieldArray, useForm, Controller } from "react-hook-form"
 import { Input } from '@/components/Input'
 import { Upload } from '@/components/Upload'
-import { getBillData } from '@/services'
+import { getBillData, getFakeBillData } from '@/services'
 import { nanoid } from "nanoid"
 import { Header } from '@/components/Header'
 import { Button } from "@/components/Button"
@@ -19,6 +19,8 @@ const CURRENCY_FORMATS = [
   { value: 'USD', label: 'USD' },
   { value: 'EUR', label: 'EUR' },
 ]
+
+const BYPASS_API_CALL = true
 
 function calculateTotalOwed(assignments, friends, items) {
   const totalOwed = {}
@@ -48,46 +50,21 @@ function calculateTotalOwed(assignments, friends, items) {
   return result
 }
 
+function priceToLocaleString(price, currency = 'EUR') {
+  if (!currency) {
+    return price
+  }
+  return price.toLocaleString('es-ES', { style: 'currency', currency: currency })
+}
+
 function App() {
   const [step, setStep] = useState(0)
+  const [currency, setCurrency] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isProcessed, setIsProcessed] = useState(false)
   const [friends, setFriends] = useState([])
   const [assignments, setAssignments] = useState({})
-  const [items, setItems] = useState([
-    {
-      "id": "1",
-      "name": "Copa Errazuriz",
-      "quantity": 4,
-      "price": 4490
-    },
-    {
-      "id": "2",
-      "name": "Mestra lager pils",
-      "quantity": 4,
-      "price": 5490
-    },
-    {
-      "id": "3",
-      "name": "Pizza Mona Lisa",
-      "quantity": 1,
-      "price": 14990
-    },
-    {
-      "id": "4",
-      "name": "Salmon el salmon",
-      "quantity": 1,
-      "price": 9990
-    },
-    {
-      "id": "5",
-      "name": "El Republicano TD",
-      "quantity": 1,
-      "price": 5490
-    }
-  ])
-
-  console.log({ assignments })
+  const [items, setItems] = useState([])
 
   return (
     <main className="flex flex-col items-center min-h-screen px-4 py-8 sm:px-6 lg:px-8 gap-2.5 dark:bg-slate-900 min-w-full">
@@ -120,6 +97,7 @@ function App() {
               setIsProcessed={setIsProcessed}
               setItems={setItems}
               setStep={setStep}
+              setCurrency={setCurrency}
             />
           </AccordionStep>
           <AccordionStep
@@ -145,6 +123,7 @@ function App() {
                   setAssignments={setAssignments}
                   assignments={assignments}
                   isProcessed={isProcessed}
+                  currency={currency}
                 />
               </div>
             </div>
@@ -161,6 +140,7 @@ function App() {
               setFriends={setFriends}
               items={items}
               assignments={assignments}
+              currency={currency}
             />
           </AccordionStep>
         </div>}
@@ -169,9 +149,8 @@ function App() {
 }
 
 const UploadSection = (props) => {
-  const { isLoading, setIsLoading, setItems, isProcessed, setIsProcessed, setStep } = props
+  const { isLoading, setIsLoading, setItems, isProcessed, setIsProcessed, setStep, setCurrency } = props
   const openAIApiKey = import.meta.env.VITE_OPENAI_API_KEY || ''
-  console.log({ openAIApiKey })
   const methods = useForm({
     defaultValues: {
       apiKey: openAIApiKey
@@ -182,7 +161,8 @@ const UploadSection = (props) => {
 
   const onSubmit = async (data) => {
     setIsLoading(true)
-    const response = await getBillData(data.apiKey, file, data.currency)
+    setCurrency(data.currency)
+    const response = BYPASS_API_CALL ? await getFakeBillData() : await getBillData(data.apiKey, file, data.currency)
     setIsLoading(false)
     setItems(response?.items || [])
     setIsProcessed(true)
@@ -243,7 +223,7 @@ const UploadSection = (props) => {
 }
 
 const ItemsSection = (props) => {
-  const { items, setItems, isLoading, friends, setAssignments, assignments, } = props
+  const { items, setItems, isLoading, friends, setAssignments, assignments, currency } = props
   const [itemPrice, setItemPrice] = useState(0)
   const [editingPlanId, setEditingPlanId] = useState(null)
   const [selectedItem, setselectedItem] = useState({})
@@ -327,7 +307,7 @@ const ItemsSection = (props) => {
                         className="flex items-center justify-center text-xs hover:bg-green-500 dark:hover:bg-slate-800 p-1 cursor-pointer rounded-sm"
                       >
                         <span>
-                          {item.price}
+                          {priceToLocaleString(item.price, currency)}
                         </span>
                         <Icon type="pen" className="ml-2 h-3 w-3 fill-green-400 dark:fill-white" />
                         <Tooltip id="edit-price" />
@@ -335,7 +315,7 @@ const ItemsSection = (props) => {
                     }
                   </div>
                   <div className="flex items-center justify-center text-xs col-span-2">
-                    {item.quantity * item.price}
+                    {priceToLocaleString(item.quantity * item.price, currency)}
                   </div>
                   <div
                     className="flex items-center justify-center text-xs cursor-pointer col-span-2 hover:bg-green-500 dark:hover:bg-slate-800 rounded-sm"
@@ -560,16 +540,7 @@ const AssignmentsSection = (props) => {
 
 const SendMessageSection = (props) => {
   const { friends, items, assignments, currency } = props
-  const [totals, setTotals] = useState([
-    {
-      "name": "JC",
-      "totalOwed": 38435
-    },
-    {
-      "name": "Toño",
-      "totalOwed": 16475
-    }
-  ])
+  const [totals, setTotals] = useState([])
   const { control, getValues } = useForm()
 
   useEffect(() => {
@@ -579,10 +550,12 @@ const SendMessageSection = (props) => {
   }, [assignments, items, friends])
 
   const sendWhatsAppMessage = (friend) => {
-    const phoneNumbers = getValues(`phoneNumbers.${friend.id}`);
+    const phoneNumbers = getValues(`phoneNumbers.${friend.name}`);
+
+    console.log({ phoneNumbers })
     const phoneNumber = phoneNumbers;
     if (phoneNumber) {
-      const message = `Hola! ${friend.name}, me debes un total de ${friend.totalOwed} ${currency} para el pago de tus ítems. Si tienes alguna duda, no dudes en contactarme.`;
+      const message = `Hola! ${friend.name}, me debes un total de ${priceToLocaleString(friend.totalOwed)} para el pago de tus ítems. Si tienes alguna duda, no dudes en contactarme.`;
       const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
     }
@@ -596,7 +569,7 @@ const SendMessageSection = (props) => {
             {totals?.map((friend, index) => (
               <div key={index} className="grid grid-cols-6 gap-2 border-b border-green-500 dark:border-gray-700 p-2 rounded-sm">
                 <div className="flex items-center justify-center text-left col-span-1 text-lg">{friend.name}</div>
-                <div className="flex items-center justify-center text-lg col-span-1">{friend.totalOwed || 0}</div>
+                <div className="flex items-center justify-center text-lg col-span-1">{priceToLocaleString(friend.totalOwed || 0, currency)}</div>
                 <div className="flex items-center col-span-4">
                   <Controller
                     name={`phoneNumbers.${friend.name}`}

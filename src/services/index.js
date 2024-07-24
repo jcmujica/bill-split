@@ -54,3 +54,44 @@ export const getBillData = async (apiKey, image, currency) => {
     console.error('Error processing image:', error)
   }
 }
+
+export const getFakeBillData = async () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        items: [
+          {
+            id: "1",
+            name: "Copa Errazuriz",
+            quantity: 4,
+            price: 4490
+          },
+          {
+            id: "2",
+            name: "Mestra lager pils",
+            quantity: 4,
+            price: 5490
+          },
+          {
+            id: "3",
+            name: "Pizza Mona Lisa",
+            quantity: 1,
+            price: 14990
+          },
+          {
+            id: "4",
+            name: "Salmon el salmon",
+            quantity: 1,
+            price: 9990
+          },
+          {
+            id: "5",
+            name: "El Republicano TD",
+            quantity: 1,
+            price: 5490
+          }
+        ]
+      })
+    }, 1000)
+  })
+}
