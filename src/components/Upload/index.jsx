@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import React, { useState, useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
 
-export const Upload = ({ name }) => {
-  const { register, setValue, formState: { errors } } = useFormContext();
-  const [preview, setPreview] = useState(null);
+export const Upload = (props) => {
+  const { name } = props
+  const { register, setValue, formState: { errors } } = useFormContext()
+  const [preview, setPreview] = useState(null)
 
   const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
+    const selectedFile = event.target.files[0]
+    console.log({ selectedFile })
     if (selectedFile && selectedFile.type.startsWith('image/')) {
-      setValue(name, selectedFile, { shouldValidate: true });
-      setPreview(URL.createObjectURL(selectedFile));
+      setValue(name, selectedFile, { shouldValidate: true })
+      setPreview(URL.createObjectURL(selectedFile))
     } else {
-      alert('Please upload a valid image file');
+      alert('Por favor, carga un archivo de imagen válido')
     }
-  };
+  }
+
+  useEffect(() => {
+    register(name, { required: 'Este campo es requerido' });
+  }, [register, name]);
 
   return (
     <div className="grid grid-cols-2 gap-10">
@@ -25,7 +31,6 @@ export const Upload = ({ name }) => {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          {...register(name, { required: 'Este campo es requerido' })}
         />
         {errors[name] && <p className="text-red-500 text-sm mt-2 text-left">{errors[name].message}</p>}
       </div>
@@ -45,5 +50,5 @@ export const Upload = ({ name }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

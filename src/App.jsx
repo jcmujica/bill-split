@@ -414,16 +414,16 @@ const FriendsSection = ({ friends, setFriends }) => {
                 placeholder="Nombre"
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 flex items-center justify-center">
               <button
-                className="bg-green-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-2 cursor-pointer"
+                className="bg-green-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-1 cursor-pointer"
                 onClick={() => handleDiscardNewFriend(index)}>
                 <Icon type="close" className="w-3 h-3 stroke-white" />
               </button>
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 flex items-center justify-center">
               <button
-                className="bg-green-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-2 cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed"
+                className="bg-green-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-1 cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed"
                 onClick={() => handleSaveNewFriend(index, friend.id)}
               >
                 <Icon type="check" className="w-3 h-3" />
@@ -449,8 +449,8 @@ const FriendsSection = ({ friends, setFriends }) => {
 const AssignmentsSection = (props) => {
   const { assignments, setAssignments, item, friends, handleCloseAssignItem } = props
   const [error, setError] = useState(null)
-
-  const { control, handleSubmit, reset } = useForm({
+  const [remaining, setRemaining] = useState(item.quantity)
+  const { control, handleSubmit, reset, watch } = useForm({
     defaultValues: {
       assignments: friends.reduce((acc, friend) => {
         acc[friend.id] = assignments[item.id]?.[friend.id] || 0
@@ -458,6 +458,8 @@ const AssignmentsSection = (props) => {
       }, {}),
     },
   })
+  const assignedValues = watch('assignments')
+  const itemTotal = item?.price * item?.quantity
 
   useEffect(() => {
     reset({
@@ -467,6 +469,13 @@ const AssignmentsSection = (props) => {
       }, {}),
     })
   }, [item, friends, reset, assignments])
+
+  const updateAssignedVariables = () => {
+    const totals = Object.values(assignedValues).reduce((acc, qty) => {
+      return acc + parseFloat(qty || 0)
+    }, 0)
+    setRemaining(item.quantity - totals)
+  }
 
   const onSubmit = (data) => {
     const totalAssignments = Object.values(data.assignments).reduce((acc, qty) => acc + parseFloat(qty || 0), 0)
@@ -489,22 +498,28 @@ const AssignmentsSection = (props) => {
       className="flex flex-col gap-2 items-center justify-center"
     >
       <h2 className="text-2xl mb-6">Asignar a amigos</h2>
-      <div className="grid grid-cols-3 bg-green-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
+      <div className="grid grid-cols-4 bg-green-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
         <div className="text-left font-bold">Ítem</div>
+        <div className="font-bold">Total</div>
         <div className="font-bold">Cantidad</div>
-        <div className="font-bold">Precio</div>
+        <div className="font-bold">Sin asignar</div>
         <div className="font-medium text-gray-900 dark:text-white text-lg text-left">{item?.name}</div>
+        <div className="font-medium text-gray-900 dark:text-white text-lg">{priceToLocaleString(itemTotal)}</div>
         <div className="font-medium text-gray-900 dark:text-white text-lg">{item?.quantity}</div>
-        <div className="font-medium text-gray-900 dark:text-white text-lg">{item?.price * item?.quantity}</div>
+        <div className="font-medium text-gray-900 dark:text-white text-lg">
+          {remaining}
+        </div>
       </div>
       <div className="flex flex-col bg-green-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
-        <div className="flex justify-between items-center gap-2 p-2 rounded-sm font-bold">
-          <div>Nombre</div>
+        <div className="grid grid-cols-3 gap-2 p-2 rounded-sm font-bold">
+          <div className="text-left">Nombre</div>
+          <div>Monto Asignado</div>
           <div>Cantidad</div>
         </div>
         {friends.map((friend, index) => (
-          <div key={index} className="flex justify-between items-center gap-2 p-2 rounded-sm">
+          <div key={index} className="grid grid-cols-3 gap-2 p-2 rounded-sm">
             <div className="text-left">{friend.name}</div>
+            <div>{priceToLocaleString((itemTotal * assignedValues[friend.id]) / item.quantity)}</div>
             <div>
               <Controller
                 control={control}
@@ -512,6 +527,10 @@ const AssignmentsSection = (props) => {
                 render={({ field }) => (
                   <select
                     {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      updateAssignedVariables()
+                    }}
                     className="w-full p-2 border border-gray-300 rounded-md"
                   >
                     <option value="0">0</option>
@@ -550,16 +569,14 @@ const SendMessageSection = (props) => {
   }, [assignments, items, friends])
 
   const sendWhatsAppMessage = (friend) => {
-    const phoneNumbers = getValues(`phoneNumbers.${friend.name}`);
-
-    console.log({ phoneNumbers })
-    const phoneNumber = phoneNumbers;
+    const phoneNumbers = getValues(`phoneNumbers.${friend.name}`)
+    const phoneNumber = phoneNumbers
     if (phoneNumber) {
-      const message = `Hola! ${friend.name}, me debes un total de ${priceToLocaleString(friend.totalOwed)} para el pago de tus ítems. Si tienes alguna duda, no dudes en contactarme.`;
-      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
+      const message = `Hola! ${friend.name}, me debes un total de ${priceToLocaleString(friend.totalOwed)} para el pago de tus ítems. Si tienes alguna duda, no dudes en contactarme.`
+      const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+      window.open(whatsappUrl, '_blank')
     }
-  };
+  }
 
   return (
     <form>
@@ -586,7 +603,7 @@ const SendMessageSection = (props) => {
                   />
                   <button
                     type="button"
-                    className="ml-2 btn btn-primary bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
+                    className="ml-2 btn btn-primary bg-transparent border border-green-500 text-green-500 hover:text-green-700 font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
                     onClick={() => sendWhatsAppMessage(friend)}
                   >
                     Enviar por WhatsApp
@@ -598,7 +615,7 @@ const SendMessageSection = (props) => {
         </div>
       </div>
     </form>
-  );
+  )
 }
 
 export default App
