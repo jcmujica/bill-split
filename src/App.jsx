@@ -95,7 +95,7 @@ function App() {
       {step === 0 ?
         <div className="w-full mx-auto">
           <h2 className="text-xl break-words">
-            ¿Cometiste el <span className="text-orange-500">grave error</span> de pagar la <span className="text-orange-500">cuenta entera</span> en una salida con tus amigos y ahora debes cobrarles?
+            ¿Cometiste el <span className="text-green-500">grave error</span> de pagar la <span className="text-green-500">cuenta entera</span> en una salida con tus amigos y ahora debes cobrarles?
           </h2>
           <h2 className="text-xl break-words mt-2">
             Te ayudamos a repartir la cuenta, recuperar tu dinero y mantener tus amistades.
@@ -324,12 +324,12 @@ const ItemsSection = (props) => {
                       <span
                         data-tooltip-id="edit-price"
                         data-tooltip-content="Editar Precio"
-                        className="flex items-center justify-center text-xs hover:bg-orange-500 dark:hover:bg-slate-800 p-1 cursor-pointer rounded-sm"
+                        className="flex items-center justify-center text-xs hover:bg-green-500 dark:hover:bg-slate-800 p-1 cursor-pointer rounded-sm"
                       >
                         <span>
                           {item.price}
                         </span>
-                        <Icon type="pen" className="ml-2 h-3 w-3 fill-orange-400 dark:fill-white" />
+                        <Icon type="pen" className="ml-2 h-3 w-3 fill-green-400 dark:fill-white" />
                         <Tooltip id="edit-price" />
                       </span>
                     }
@@ -338,11 +338,11 @@ const ItemsSection = (props) => {
                     {item.quantity * item.price}
                   </div>
                   <div
-                    className="flex items-center justify-center text-xs cursor-pointer col-span-2 hover:bg-orange-500 dark:hover:bg-slate-800 rounded-sm"
+                    className="flex items-center justify-center text-xs cursor-pointer col-span-2 hover:bg-green-500 dark:hover:bg-slate-800 rounded-sm"
                     onClick={() => handleAssignItem(item)}
                   >
                     <span data-tooltip-id="assign-item" data-tooltip-content="Asignar a tus amigos" className="flex items-center justify-center text-xs p-1 cursor-pointer rounded-sm">
-                      <Icon type="editUser" color="white" className="fill-orange-400 dark:fill-white" />
+                      <Icon type="editUser" color="white" className="fill-green-400 dark:fill-white" />
                     </span>
                     <Tooltip id="assign-item" />
                   </div>
@@ -420,7 +420,7 @@ const FriendsSection = ({ friends, setFriends }) => {
         <Button type="outline" onClick={handleAddNewFriend}>
           <div className="flex items-center justify-center gap-2">
             <span>Agregar Amigos</span>
-            <Icon type="addUser" className="fill-orange-500 hover:fill-white" />
+            <Icon type="addUser" className="fill-green-500 hover:fill-white" />
           </div>
         </Button>
       </div>
@@ -436,14 +436,14 @@ const FriendsSection = ({ friends, setFriends }) => {
             </div>
             <div className="col-span-2">
               <button
-                className="bg-orange-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-2 cursor-pointer"
+                className="bg-green-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-2 cursor-pointer"
                 onClick={() => handleDiscardNewFriend(index)}>
                 <Icon type="close" className="w-3 h-3 stroke-white" />
               </button>
             </div>
             <div className="col-span-2">
               <button
-                className="bg-orange-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-2 cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed"
+                className="bg-green-900 dark:bg-slate-800 hover:bg-slate-700 text-white rounded-md p-2 cursor-pointer disabled:bg-slate-700 disabled:cursor-not-allowed"
                 onClick={() => handleSaveNewFriend(index, friend.id)}
               >
                 <Icon type="check" className="w-3 h-3" />
@@ -456,7 +456,7 @@ const FriendsSection = ({ friends, setFriends }) => {
         <div className="flex flex-col gap-2 mt-4">
           <h3>Amigos</h3>
           {friends.map(friend => (
-            <div className="flex gap-2 items-center justify-center w-full bg-orange-300 dark:bg-slate-900 rounded-md p-2" key={friend.id}>
+            <div className="flex gap-2 items-center justify-center w-full bg-green-300 dark:bg-slate-900 rounded-md p-2" key={friend.id}>
               <p>{friend.name}</p>
             </div>
           ))}
@@ -509,7 +509,7 @@ const AssignmentsSection = (props) => {
       className="flex flex-col gap-2 items-center justify-center"
     >
       <h2 className="text-2xl mb-6">Asignar a amigos</h2>
-      <div className="grid grid-cols-3 bg-orange-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
+      <div className="grid grid-cols-3 bg-green-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
         <div className="text-left font-bold">Ítem</div>
         <div className="font-bold">Cantidad</div>
         <div className="font-bold">Precio</div>
@@ -517,7 +517,7 @@ const AssignmentsSection = (props) => {
         <div className="font-medium text-gray-900 dark:text-white text-lg">{item?.quantity}</div>
         <div className="font-medium text-gray-900 dark:text-white text-lg">{item?.price * item?.quantity}</div>
       </div>
-      <div className="flex flex-col bg-orange-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
+      <div className="flex flex-col bg-green-100 dark:bg-slate-900 p-2.5 rounded-md w-full">
         <div className="flex justify-between items-center gap-2 p-2 rounded-sm font-bold">
           <div>Nombre</div>
           <div>Cantidad</div>
@@ -550,7 +550,7 @@ const AssignmentsSection = (props) => {
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button
         type="submit"
-        className="mt-4 bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
+        className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
       >
         Asignar
       </button>
@@ -594,9 +594,9 @@ const SendMessageSection = (props) => {
         <div className="flex flex-col dark:bg-slate-800 p-5 rounded-lg min-h-96">
           <div className="flex flex-col dark:bg-slate-800 rounded-lg min-h-96">
             {totals?.map((friend, index) => (
-              <div key={index} className="grid grid-cols-6 gap-2 border-b border-orange-500 dark:border-gray-700 p-2 rounded-sm">
-                <div className="flex items-center justify-center text-left text-xs col-span-1">{friend.name}</div>
-                <div className="flex items-center justify-center text-xs col-span-1">{friend.totalOwed || 0}</div>
+              <div key={index} className="grid grid-cols-6 gap-2 border-b border-green-500 dark:border-gray-700 p-2 rounded-sm">
+                <div className="flex items-center justify-center text-left col-span-1 text-lg">{friend.name}</div>
+                <div className="flex items-center justify-center text-lg col-span-1">{friend.totalOwed || 0}</div>
                 <div className="flex items-center col-span-4">
                   <Controller
                     name={`phoneNumbers.${friend.name}`}
@@ -606,14 +606,14 @@ const SendMessageSection = (props) => {
                       <input
                         type="tel"
                         placeholder="Teléfono"
-                        className="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-orange-500 focus:border-orange-500 block w-full p-2.5 dark:bg-slate-900 dark:border-slate-800 dark:placeholder-slate-400 dark:text-white dark:focus:ring-orange-500 dark:focus:border-orange-500"
+                        className="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-slate-900 dark:border-slate-800 dark:placeholder-slate-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
                         {...field}
                       />
                     )}
                   />
                   <button
                     type="button"
-                    className="ml-2 btn btn-primary bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
+                    className="ml-2 btn btn-primary bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 disabled:cursor-not-allowed"
                     onClick={() => sendWhatsAppMessage(friend)}
                   >
                     Enviar por WhatsApp
