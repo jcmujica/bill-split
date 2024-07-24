@@ -25,3 +25,5 @@ npm run dev
 Luego, accederás a la aplicación en http://localhost:5173/.
 
 Puedes encontrar una imagen en la carpeta `public/bill.png` que se puede utilizar para probar la aplicación.
+
+La aplicación tambien está deployada en [vercel](https://bill-split-red.vercel.app/).

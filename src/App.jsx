@@ -20,7 +20,7 @@ const CURRENCY_FORMATS = [
   { value: 'EUR', label: 'EUR' },
 ]
 
-const BYPASS_API_CALL = true
+const BYPASS_API_CALL = false
 
 function calculateTotalOwed(assignments, friends, items) {
   const totalOwed = {}
