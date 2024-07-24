@@ -16,7 +16,7 @@ La IA se encarga de extraer los ítems de la imagen y asignarlos a tus amigos. P
 
 ## ¿Cómo puedo probar la aplicación?
 
-Puedes probar la aplicación en la sección de "Ejecución en modo de desarrollo" corriendo el siguiente comando en tu terminal:
+Puedes probar la aplicación corriendo el siguiente comando en tu terminal:
 
 ```
 npm run dev
