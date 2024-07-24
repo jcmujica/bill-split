@@ -20,7 +20,7 @@ export const getBillData = async (apiKey, image, currency) => {
     const imageBase64 = await getBase64(image)
 
     const prompt = `
-      Read the items in the following image, it is the picture of a bill from a restaurant or bar, get the text in the image and return a JSON object with the items and their quantities and prices the number format for prices is ${currency}. Group the items by quantity. Add a random id to each item.
+      Read the items in the following image, it is the picture of a bill from a restaurant or bar, get the text in the image and return a JSON object with the items, names, quantities and prices, the number format for prices is ${currency}. Group the items by quantity. Add a random id to each item.
     `
 
     const { object } = await generateObject({
@@ -49,7 +49,6 @@ export const getBillData = async (apiKey, image, currency) => {
       })
     })
 
-    // console.log(JSON.stringify(object, null, 2))
     return object
   } catch (error) {
     console.error('Error processing image:', error)
